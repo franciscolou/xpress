@@ -13,6 +13,7 @@ from functools import partial
 import divisions
 import keyboard
 import threading
+import os
 
 divisions = divisions.divisionsList
 
@@ -22,6 +23,8 @@ windowSizeY = 390
 divisionsX = 380
 divisionsY = 40
 
+workingDirectory = os.getcwd()
+
 disabledStyle = "background-color: #ff8c8c; color: white; border-radius: 5px;"
 enabledStyle = "background-color: #a10000; color: white; border-radius: 5px;"
 
@@ -30,7 +33,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(windowSizeX, windowSizeY)
         MainWindow.setFixedSize(windowSizeX, windowSizeY)
-        MainWindow.setWindowIcon(QtGui.QIcon('project/DIC.png'))
+        MainWindow.setWindowIcon(QtGui.QIcon('xpress/project/imgs/DIC.png'))
         self.startHotkey = 'up'
         self.pauseHotkey = 'down'
 
@@ -72,7 +75,7 @@ class Ui_MainWindow(object):
         self.dicImg = QtWidgets.QLabel(self.centralwidget)
         self.dicImg.setGeometry(QtCore.QRect(20, 30, 61, 61))
         self.dicImg.setText("")
-        self.dicImg.setPixmap(QtGui.QPixmap("project/DIC.png"))
+        self.dicImg.setPixmap(QtGui.QPixmap("xpress/project/imgs/DIC.png"))
         self.dicImg.setScaledContents(True)
         self.dicImg.setObjectName("dicImg")
 
