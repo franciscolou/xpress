@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium import webdriver
 import my_site
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -19,16 +19,12 @@ import keyboard
 import threading
 import os
 
-def current_url_is(url):
-    return lambda driver: my_site.driver.current_url == url
-
 system = platform.system()
 if system == 'Darwin': # (macOS)
     ctrl = 'command'
 else:
     ctrl = 'ctrl'
 
-my_site.driver.implicitly_wait(2)
 
 divisions = divisions.divisionsList
 
@@ -41,15 +37,15 @@ divisionsY = 40
 
 workingDirectory = os.getcwd()
 
-enabledStyle = "background-color: #f2d129; color: black; border-radius: 5px;"
-disabledStyle = "background-color: #ffe76e; color: #b0b0b0; border-radius: 5px;"
+disabledStyle = "background-color: #ff8c8c; color: white; border-radius: 5px;"
+enabledStyle = "background-color: #a10000; color: white; border-radius: 5px;"
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(windowSizeX, windowSizeY)
         MainWindow.setFixedSize(windowSizeX, windowSizeY)
-        MainWindow.setWindowIcon(QtGui.QIcon('xpress/project/imgs/dph.png'))
+        MainWindow.setWindowIcon(QtGui.QIcon('xpress/project/imgs/DIC.png'))
         self.startHotkey = 'up'
         self.pauseHotkey = 'down'
         self.gapBetweenSentences = 7
@@ -108,23 +104,23 @@ class Ui_MainWindow(object):
         self.autoButton.setGeometry(QtCore.QRect(105, 250, 82, 17))
         self.autoButton.setObjectName("Automático")
         self.autoButton.setChecked(True)
-        self.autoButton.clicked.connect(self.toggle_configs)
+        self.autoButton.clicked.connect(self.toggle_gap)
 
         # Radio button de opção 'Manual'
         self.manualButton = QtWidgets.QRadioButton(self.centralwidget)
         self.manualButton.setGeometry(QtCore.QRect(215, 250, 82, 17))
         self.manualButton.setObjectName("Manual")
-        self.manualButton.clicked.connect(self.toggle_configs)
+        self.manualButton.clicked.connect(self.toggle_gap)
         
-        self.dphImg = QtWidgets.QLabel(self.centralwidget)
-        self.dphImg.setGeometry(QtCore.QRect(20, 30, 61, 61))
-        self.dphImg.setText("")
-        self.dphImg.setPixmap(QtGui.QPixmap("xpress/project/imgs/dphnobg.png"))
-        self.dphImg.setScaledContents(True)
-        self.dphImg.setObjectName("dphImg")
+        self.dicImg = QtWidgets.QLabel(self.centralwidget)
+        self.dicImg.setGeometry(QtCore.QRect(20, 30, 61, 61))
+        self.dicImg.setText("")
+        self.dicImg.setPixmap(QtGui.QPixmap("xpress/project/imgs/DIC.png"))
+        self.dicImg.setScaledContents(True)
+        self.dicImg.setObjectName("dicImg")
 
         self.titleLabel = QtWidgets.QLabel(self.centralwidget)
-        self.titleLabel.setGeometry(QtCore.QRect(90, 40, 241, 21))
+        self.titleLabel.setGeometry(QtCore.QRect(90, 30, 241, 21))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.titleLabel.setFont(font)
@@ -208,8 +204,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("[DPH] XPress", "[DPH] XPress"))
-        self.titleLabel.setText(_translate("MainWindow", "Departamento de Polícia Habbiana\n"))
+        MainWindow.setWindowTitle(_translate("[DIC] XPress", "[DIC] XPress"))
+        self.titleLabel.setText(_translate("MainWindow", "Departamento de Investigação Criminal\n"))
         self.startButton.setText(_translate("MainWindow", "Iniciar"))
         self.stopButton.setText(_translate("MainWindow", "Encerrar"))
         self.startHotkeyLabel.setText(_translate("MainWindow", "Retomar/Iniciar:"))
@@ -352,20 +348,16 @@ class Ui_MainWindow(object):
             widget.setEnabled(True)
             widget.setStyleSheet(enabledStyle)
 
-    def toggle_configs(self):
+    def toggle_gap(self):
         if self.autoButton.isChecked():
             self.gapHotkeyLabel.setStyleSheet("color: #000000")
             self.gapHotkeyInput.setEnabled(True)
-            self.pauseHotkeyLabel.setStyleSheet("color: #000000")
-            self.pauseHotkeyInput.setEnabled(True)
         else:
             self.gapHotkeyLabel.setStyleSheet("color: #a8a8a8;")
             self.gapHotkeyInput.setEnabled(False)
-            self.pauseHotkeyLabel.setStyleSheet("color: #a8a8a8")
-            self.pauseHotkeyInput.setEnabled(False)
 
     def change_gap(self):
-        if self.gapBetweenSentences + 1 > 12:
+        if self.gapBetweenSentences + 1 > 10:
             self.gapBetweenSentences = 4
             self.gapHotkeyInput.setText(str(self.gapBetweenSentences) + 's')
         else: 
@@ -397,12 +389,14 @@ class Ui_MainWindow(object):
             keyboard.add_hotkey(self.pauseHotkey, self.on_pause_press)
 
     def check_login(self, nickname, password):
+        self.submitLoginButton.setEnabled(False)
+        self.submitLoginButton.setStyleSheet(disabledStyle)
         new_thread = threading.Thread(target=lambda: my_site.login(nickname, password))
         new_thread.daemon = True
         new_thread.start()
         new_thread.join()
         try:
-          my_site.driver.find_element(By.CLASS_NAME, "navbar")
+          my_site.driver.find_element(By.ID, 'search-results')
           for widget in self.authWidgetList:
               self.hide_widget(widget)
           for i in range(len(divisions)):
@@ -416,10 +410,10 @@ class Ui_MainWindow(object):
             self.division.mousePressEvent = lambda event, i=i: self.show_scripts(divisions[i].script_urls, divisions[i].color)
             self.division.show()
         except NoSuchElementException:
-            self.submitLoginButton.move(350 + divisionsWidth//2 - 45, 241)
+            self.submitLoginButton.move(416, 241)
             self.authFailedLabel = QtWidgets.QLabel(self.centralwidget)
             self.authFailedLabel.setAlignment(QtCore.Qt.AlignCenter)
-            self.authFailedLabel.setGeometry(QtCore.QRect(350 + divisionsWidth//2 - 45, 215, 90, 27))
+            self.authFailedLabel.setGeometry(QtCore.QRect(416, 215, 90, 27))
             self.authFailedLabel.setText('Login inválido.')
             self.authFailedLabel.setStyleSheet('color: #bd0300')
             self.authFailedLabel.show()
@@ -445,14 +439,14 @@ class Ui_MainWindow(object):
         self.backButton = QtWidgets.QPushButton(self.centralwidget)
         self.backButton.setGeometry(divisionsX, windowSizeY - 40, 50, 20)
         self.backButton.setText("←")
-        self.backButton.clicked.connect(lambda: self.show_divisions())
+        self.backButton.clicked.connect(lambda: self.show_divisions(0))
         self.backButton.show()
         self.container = QtWidgets.QWidget(self.centralwidget)
         self.container.setGeometry(QtCore.QRect(divisionsX - 10, divisionsY - 30, windowSizeX - 390, windowSizeY - 61))
         self.container.setLayout(self.layout)
         self.container.show()
 
-    def show_divisions(self):
+    def show_divisions(self, script):
         self.container.hide()
         self.backButton.hide()
         for division in self.divisionsWidgetList:

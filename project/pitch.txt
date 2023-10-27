@@ -1,0 +1,33 @@
+Olá, pessoal. Espero que estejam todos bem.
+
+Sempre achei muito exaustiva e monótona essa prática de ficar copiando e colando cada frase de um
+
+script quando se aplica uma aula. Alguns aqui já devem saber, eu inclusive já cheguei a comentar
+
+sobre isso em uma reunião na minha passagem anterior, mas eu estou desenvolvendo um aplicativo que
+
+será capaz de enviar as mensagens de qualquer script automaticamente, com o clique de um botão 
+
+apenas.
+
+O aplicativo já está quase 100% pronto e funcional, eu inclusive estou utilizando-o para enviar
+
+essas mensagens nesse exato momento. Eu só precisaria ver com o Comando+ algumas questões
+
+de compatibilidade. Sobre segurança, é claro que isso passará por tutela do GOT antes
+
+de ser liberado, afinal, é um aplicativo que seria instalado no computador de quem for utilizar,
+
+então precisa passar por todas as verificações de segurança e eu entendo isso.
+
+Estou apresentando esse projeto aqui porque é muito importante para mim um feedback de vocês, 
+
+se acham que existe alguma dificuldade que eu não pensei ainda, alguma desvantagem que isso 
+
+trará para o departamento, ou algo do gênero. No mais, é isso. Também sintam-se à vontade
+
+para retirar dúvidas sobre qualquer assunto relacionado ao XPress, que é como decidi chamá-
+
+-lo.
+
+-x-
